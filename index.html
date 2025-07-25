@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方太工程业务管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        .module-content { display: none; }
+        .module-content.active { display: block; }
+        .sidebar-item.active { background-color: #3B82F6; color: white; }
+        .table-row:hover { background-color: #F3F4F6; }
+        .detail-panel { max-height: 600px; overflow-y: auto; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="px-6 py-4">
+            <div class="flex items-center">
+                <i class="fas fa-building text-blue-600 text-2xl mr-3"></i>
+                <h1 class="text-2xl font-bold text-gray-800">方太工程业务管理系统</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- 左侧导航栏 -->
+        <nav class="w-64 bg-white shadow-lg h-screen sticky top-0">
+            <div class="p-4">
+                <ul class="space-y-2">
+                    <li>
+                        <button onclick="showModule('customer')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg transition-colors hover:bg-blue-50 active">
+                            <i class="fas fa-users mr-3"></i>客户管理
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showModule('project')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg transition-colors hover:bg-blue-50">
+                            <i class="fas fa-project-diagram mr-3"></i>项目（商机）管理
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showModule('contract')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg transition-colors hover:bg-blue-50">
+                            <i class="fas fa-file-contract mr-3"></i>合同管理
+                        </button>
+                    </li>
+                    <li>
+                        <button onclick="showModule('order')" class="sidebar-item w-full text-left px-4 py-3 rounded-lg transition-colors hover:bg-blue-50">
+                            <i class="fas fa-shopping-cart mr-3"></i>订单协同
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="flex-1 p-6">
+            <!-- 客户管理模块 -->
+            <div id="customer-module" class="module-content active">
+                <div class="bg-white rounded-lg shadow">
+                    <!-- 搜索栏 -->
+                    <div class="p-6 border-b">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">客户管理</h2>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>新增客户
+                            </button>
+                        </div>
+                        <div class="flex space-x-4">
+                            <input type="text" placeholder="搜索客户名称" class="px-4 py-2 border rounded-lg w-64">
+                            <select class="px-4 py-2 border rounded-lg">
+                                <option>选择区域</option>
+                                <option>华东区</option>
+                                <option>华南区</option>
+                                <option>华北区</option>
+                            </select>
+                            <select class="px-4 py-2 border rounded-lg">
+                                <option>客户类型</option>
+                                <option>开发商集团客户</option>
+                                <option>区域客户</option>
+                            </select>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <!-- 客户类型筛选 -->
+                        <div class="w-48 p-4 border-r">
+                            <h3 class="font-semibold mb-3">客户类型</h3>
+                            <ul class="space-y-2">
+                                <li><button class="text-blue-600 hover:underline">开发商集团客户 (35)</button></li>
+                                <li><button class="text-gray-600 hover:underline">区域客户 (68)</button></li>
+                            </ul>
+                        </div>
+
+                        <!-- 客户列表 -->
+                        <div class="flex-1 p-4">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">客户名称</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">区域</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">项目数量</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">合作状态</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row border-b cursor-pointer" onclick="showCustomerDetail()">
+                                        <td class="px-4 py-3">万科地产集团</td>
+                                        <td class="px-4 py-3">华东区</td>
+                                        <td class="px-4 py-3">12</td>
+                                        <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">合作中</span></td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-blue-600 hover:underline mr-2">编辑</button>
+                                            <button class="text-gray-500 hover:underline">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row border-b cursor-pointer">
+                                        <td class="px-4 py-3">碧桂园控股有限公司</td>
+                                        <td class="px-4 py-3">华南区</td>
+                                        <td class="px-4 py-3">8</td>
+                                        <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">洽谈中</span></td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-blue-600 hover:underline mr-2">编辑</button>
+                                            <button class="text-gray-500 hover:underline">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row border-b cursor-pointer">
+                                        <td class="px-4 py-3">恒大地产集团</td>
+                                        <td class="px-4 py-3">华北区</td>
+                                        <td class="px-4 py-3">15</td>
+                                        <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">合作中</span></td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-blue-600 hover:underline mr-2">编辑</button>
+                                            <button class="text-gray-500 hover:underline">详情</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 客户详情面板 -->
+                        <div id="customer-detail" class="w-80 p-4 border-l bg-gray-50 detail-panel" style="display:none;">
+                            <h3 class="font-semibold mb-4">客户详情</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">客户名称</label>
+                                    <p class="text-gray-900">万科地产集团</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">所属区域</label>
+                                    <p class="text-gray-900">华东区</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">开户行</label>
+                                    <p class="text-gray-900">中国工商银行</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">银行账号</label>
+                                    <p class="text-gray-900">6222020200012345678</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-2">合作动态</h4>
+                                    <div class="space-y-2">
+                                        <div class="bg-white p-3 rounded border">
+                                            <p class="text-sm font-medium">万科·翡翠公园项目</p>
+                                            <p class="text-xs text-gray-500">合同金额：580万元</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <p class="text-sm font-medium">万科·云城项目</p>
+                                            <p class="text-xs text-gray-500">合同金额：420万元</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 项目管理模块 -->
+            <div id="project-module" class="module-content">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">项目（商机）管理</h2>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>新增项目
+                            </button>
+                        </div>
+                        <div class="flex space-x-4">
+                            <input type="text" placeholder="搜索项目名称" class="px-4 py-2 border rounded-lg w-64">
+                            <input type="text" placeholder="项目地址" class="px-4 py-2 border rounded-lg w-48">
+                            <select class="px-4 py-2 border rounded-lg">
+                                <option>跟进状态</option>
+                                <option>初步接触</option>
+                                <option>方案洽谈</option>
+                                <option>合同签订中</option>
+                            </select>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <div class="w-48 p-4 border-r">
+                            <h3 class="font-semibold mb-3">跟进状态</h3>
+                            <ul class="space-y-2">
+                                <li><button class="text-blue-600 hover:underline">初步接触 (15)</button></li>
+                                <li><button class="text-gray-600 hover:underline">方案洽谈 (23)</button></li>
+                                <li><button class="text-gray-600 hover:underline">合同签订中 (8)</button></li>
+                                <li><button class="text-gray-600 hover:underline">已签约 (45)</button></li>
+                            </ul>
+                        </div>
+
+                        <div class="flex-1 p-4">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">项目名称</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">地址</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">客户</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">跟进状态</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">联系人</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row border-b cursor-pointer" onclick="showProjectDetail()">
+                                        <td class="px-4 py-3">万科·翡翠公园</td>
+                                        <td class="px-4 py-3">上海市浦东新区</td>
+                                        <td class="px-4 py-3">万科地产集团</td>
+                                        <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">合同签订中</span></td>
+                                        <td class="px-4 py-3">张经理</td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-blue-600 hover:underline mr-2">跟进</button>
+                                            <button class="text-gray-500 hover:underline">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row border-b cursor-pointer">
+                                        <td class="px-4 py-3">碧桂园·森林城市</td>
+                                        <td class="px-4 py-3">广州市天河区</td>
+                                        <td class="px-4 py-3">碧桂园控股</td>
+                                        <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">方案洽谈</span></td>
+                                        <td class="px-4 py-3">李总监</td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-blue-600 hover:underline mr-2">跟进</button>
+                                            <button class="text-gray-500 hover:underline">详情</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="project-detail" class="w-80 p-4 border-l bg-gray-50 detail-panel" style="display:none;">
+                            <h3 class="font-semibold mb-4">项目详情</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">项目名称</label>
+                                    <p class="text-gray-900">万科·翡翠公园</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">项目地址</label>
+                                    <p class="text-gray-900">上海市浦东新区康桥路1000号</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">联系人</label>
+                                    <p class="text-gray-900">张经理 - 13812345678</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">产品型号</label>
+                                    <p class="text-gray-900">JCD7-EM25GE</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-2">跟进记录</h4>
+                                    <div class="space-y-2">
+                                        <div class="bg-white p-3 rounded border">
+                                            <p class="text-sm font-medium">2024-01-15</p>
+                                            <p class="text-xs text-gray-600">初步方案沟通，客户对产品表示认可</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <p class="text-sm font-medium">2024-01-20</p>
+                                            <p class="text-xs text-gray-600">提交详细报价方案</p>
+                                        </div>
+                                    </div>
+                                    <button class="mt-2 w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+                                        添加跟进记录
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 合同管理模块 -->
+            <div id="contract-module" class="module-content">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">合同管理</h2>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-plus mr-2"></i>生成合同
+                            </button>
+                        </div>
+                        <div class="flex space-x-4">
+                            <input type="text" placeholder="合同编号" class="px-4 py-2 border rounded-lg w-48">
+                            <input type="text" placeholder="客户名称" class="px-4 py-2 border rounded-lg w-48">
+                            <input type="date" class="px-4 py-2 border rounded-lg">
+                            <select class="px-4 py-2 border rounded-lg">
+                                <option>审批状态</option>
+                                <option>待审批</option>
+                                <option>审批中</option>
+                                <option>已审批</option>
+                            </select>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <div class="flex-1 p-4">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">合同编号</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">客户名称</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">项目名称</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">合同金额</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">审批状态</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row border-b cursor-pointer" onclick="showContractDetail()">
+                                        <td class="px-4 py-3">HT2024001</td>
+                                        <td class="px-4 py-3">万科地产集团</td>
+                                        <td class="px-4 py-3">万科·翡翠公园</td>
+                                        <td class="px-4 py-3">¥5,800,000</td>
+                                        <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">审批中</span></td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-blue-600 hover:underline mr-2">审批</button>
+                                            <button class="text-gray-500 hover:underline">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row border-b cursor-pointer">
+                                        <td class="px-4 py-3">HT2024002</td>
+                                        <td class="px-4 py-3">碧桂园控股</td>
+                                        <td class="px-4 py-3">碧桂园·森林城市</td>
+                                        <td class="px-4 py-3">¥4,200,000</td>
+                                        <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">已审批</span></td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-gray-400">审批</button>
+                                            <button class="text-gray-500 hover:underline ml-2">详情</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="contract-detail" class="w-80 p-4 border-l bg-gray-50 detail-panel" style="display:none;">
+                            <h3 class="font-semibold mb-4">合同详情</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">合同编号</label>
+                                    <p class="text-gray-900">HT2024001</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">项目名称</label>
+                                    <p class="text-gray-900">万科·翡翠公园</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">合同金额</label>
+                                    <p class="text-gray-900">¥5,800,000</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-2">审批记录</h4>
+                                    <div class="space-y-2">
+                                        <div class="bg-white p-3 rounded border">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-sm font-medium">片区审批</p>
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">已通过</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">审批人：王片区经理 | 时间：2024-01-20</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-sm font-medium">大区审批</p>
+                                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">审批中</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">待审批人：李大区总监</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border opacity-50">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-sm font-medium">总部审批</p>
+                                                <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded-full text-xs">待审批</span>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">待审批人：总经理</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pt-4 border-t">
+                                    <button class="w-full bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 mb-2">
+                                        同意审批
+                                    </button>
+                                    <button class="w-full bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700">
+                                        驳回申请
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 订单协同模块 -->
+            <div id="order-module" class="module-content">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6 border-b">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">订单协同</h2>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                <i class="fas fa-sync mr-2"></i>同步ERP
+                            </button>
+                        </div>
+                        <div class="flex space-x-4">
+                            <input type="text" placeholder="订单编号" class="px-4 py-2 border rounded-lg w-48">
+                            <input type="text" placeholder="合同编号" class="px-4 py-2 border rounded-lg w-48">
+                            <input type="text" placeholder="客户名称" class="px-4 py-2 border rounded-lg w-48">
+                            <select class="px-4 py-2 border rounded-lg">
+                                <option>订单状态</option>
+                                <option>生产中</option>
+                                <option>已发货</option>
+                                <option>已完成</option>
+                            </select>
+                            <button class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <div class="flex-1 p-4">
+                            <table class="w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">订单编号</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">合同编号</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">客户名称</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">产品信息</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">订单状态</th>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-500">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row border-b cursor-pointer" onclick="showOrderDetail()">
+                                        <td class="px-4 py-3">DD2024001</td>
+                                        <td class="px-4 py-3">HT2024002</td>
+                                        <td class="px-4 py-3">碧桂园控股</td>
+                                        <td class="px-4 py-3">JCD7-EM25GE × 200</td>
+                                        <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">生产中</span></td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-blue-600 hover:underline mr-2">跟踪</button>
+                                            <button class="text-gray-500 hover:underline">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row border-b cursor-pointer">
+                                        <td class="px-4 py-3">DD2024002</td>
+                                        <td class="px-4 py-3">HT2024003</td>
+                                        <td class="px-4 py-3">保利地产</td>
+                                        <td class="px-4 py-3">JCD8-EM30GE × 150</td>
+                                        <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">已发货</span></td>
+                                        <td class="px-4 py-3">
+                                            <button class="text-blue-600 hover:underline mr-2">跟踪</button>
+                                            <button class="text-gray-500 hover:underline">详情</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="order-detail" class="w-80 p-4 border-l bg-gray-50 detail-panel" style="display:none;">
+                            <h3 class="font-semibold mb-4">订单详情</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">订单编号</label>
+                                    <p class="text-gray-900">DD2024001</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">关联合同</label>
+                                    <p class="text-gray-900">HT2024002</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">产品明细</label>
+                                    <div class="bg-white p-3 rounded border">
+                                        <p class="text-sm font-medium">JCD7-EM25GE</p>
+                                        <p class="text-xs text-gray-500">数量：200台 | 单价：¥21,000</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 mb-2">生产进度</h4>
+                                    <div class="space-y-2">
+                                        <div class="bg-white p-3 rounded border">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-sm">原材料采购</p>
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">完成</span>
+                                            </div>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-sm">生产制造</p>
+                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">进行中</span>
+                                            </div>
+                                            <div class="mt-2 bg-gray-200 rounded-full h-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: 65%"></div>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">65% 完成</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border opacity-50">
+                                            <div class="flex items-center justify-between">
+                                                <p class="text-sm">质量检测</p>
+                                                <span class="bg-gray-100 text-gray-500 px-2 py-1 rounded-full text-xs">待开始</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pt-4 border-t">
+                                    <button class="w-full bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+                                        查看收款计划
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function showModule(moduleId) {
+            // 隐藏所有模块
+            const modules = document.querySelectorAll('.module-content');
+            modules.forEach(module => {
+                module.classList.remove('active');
+            });
+
+            // 显示选中的模块
+            document.getElementById(moduleId + '-module').classList.add('active');
+
+            // 更新侧边栏激活状态
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 隐藏所有详情面板
+            const detailPanels = document.querySelectorAll('[id$="-detail"]');
+            detailPanels.forEach(panel => {
+                panel.style.display = 'none';
+            });
+        }
+
+        function showCustomerDetail() {
+            document.getElementById('customer-detail').style.display = 'block';
+        }
+
+        function showProjectDetail() {
+            document.getElementById('project-detail').style.display = 'block';
+        }
+
+        function showContractDetail() {
+            document.getElementById('contract-detail').style.display = 'block';
+        }
+
+        function showOrderDetail() {
+            document.getElementById('order-detail').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
